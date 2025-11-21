@@ -4,7 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import AuthScreen from "./screens/AuthScreen";
-import OnboardingScreen from "./screens/OnboardingScreen";
+import OnBoardingScreen from "./screens/OnBoardingScreen";
 import HomeScreen from "./screens/HomeScreen";
 import WorkoutPlanScreen from "./screens/WorkoutPlanScreen";
 import DietPlanScreen from "./screens/DietPlanScreen";
