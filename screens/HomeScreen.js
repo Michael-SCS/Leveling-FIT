@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ImageBackground,
+  ActivityIndicator,
+  Platform
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
@@ -325,11 +334,10 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.heroTop}>
             <View>
               <Text style={styles.greeting}>{getGreeting()}</Text>
-              <Text style={styles.userName}>{userName.split(' ')[0]} 💪</Text>
-            </View>
+<Text style={styles.userName}>{userName?.split(' ')[0] || 'Warrior'} 💪</Text>            </View>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
               <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{userName.charAt(0)}</Text>
+  <Text style={styles.avatarText}>{userName?.charAt(0) || 'W'}</Text>
               </View>
             </TouchableOpacity>
           </View>
