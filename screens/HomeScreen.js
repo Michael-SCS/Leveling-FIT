@@ -71,8 +71,8 @@ const StatCard = ({ icon, value, label, color = '#FF4500', loading }) => (
 
 // Habit Button con imagen de fondo
 const QuickHabitButton = ({ image, label, completed, onPress }) => (
-  <TouchableOpacity 
-    style={styles.quickHabit} 
+  <TouchableOpacity
+    style={styles.quickHabit}
     onPress={onPress}
     activeOpacity={0.8}
   >
@@ -186,7 +186,7 @@ export default function HomeScreen({ navigation }) {
 
         // Obtener usuario de Supabase
         const { data: { user } } = await supabase.auth.getUser();
-        
+
         if (user) {
           // Cargar perfil
           const { data: profile } = await supabase
@@ -324,8 +324,8 @@ export default function HomeScreen({ navigation }) {
       <XPToast />
       <LevelUpModal />
 
-      <ScrollView 
-        contentContainerStyle={styles.content} 
+      <ScrollView
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         bounces={true}
       >
@@ -333,11 +333,13 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.hero}>
           <View style={styles.heroTop}>
             <View>
-              <Text style={styles.greeting}>{getGreeting()}</Text>
-<Text style={styles.userName}>{userName?.split(' ')[0] || 'Warrior'} 💪</Text>            </View>
+              <Text style={styles.userName}>
+                {userName?.split(' ')[0] || 'Warrior'} 💪
+              </Text>
+            </View>
             <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
               <View style={styles.avatar}>
-  <Text style={styles.avatarText}>{userName?.charAt(0) || 'W'}</Text>
+                <Text style={styles.avatarText}>{userName?.charAt(0) || 'W'}</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -351,13 +353,13 @@ export default function HomeScreen({ navigation }) {
                 {Object.values(habits).filter(Boolean).length} de {Object.values(habits).length} completadas
               </Text>
               <Text style={styles.motivationalText}>
-                {dailyProgress === 100 
-                  ? "🎉 ¡Increíble! Día perfecto" 
-                  : dailyProgress >= 75 
-                  ? "🔥 ¡Vas muy bien!" 
-                  : dailyProgress >= 50 
-                  ? "💪 Sigue así" 
-                  : "🚀 ¡Tú puedes lograrlo!"}
+                {dailyProgress === 100
+                  ? "🎉 ¡Increíble! Día perfecto"
+                  : dailyProgress >= 75
+                    ? "🔥 ¡Vas muy bien!"
+                    : dailyProgress >= 50
+                      ? "💪 Sigue así"
+                      : "🚀 ¡Tú puedes lograrlo!"}
               </Text>
             </View>
           </View>
@@ -365,25 +367,25 @@ export default function HomeScreen({ navigation }) {
 
         {/* Quick Stats - DATOS REALES */}
         <View style={styles.statsContainer}>
-          <StatCard 
-            icon="🔥" 
-            value={stats.loading ? "..." : stats.streak.toString()} 
-            label="Racha" 
-            color="#FF4500" 
+          <StatCard
+            icon="🔥"
+            value={stats.loading ? "..." : stats.streak.toString()}
+            label="Racha"
+            color="#FF4500"
             loading={stats.loading}
           />
-          <StatCard 
-            icon="⚡" 
-            value={stats.loading ? "..." : stats.xpToday.toString()} 
-            label="XP Hoy" 
-            color="#FFD700" 
+          <StatCard
+            icon="⚡"
+            value={stats.loading ? "..." : stats.xpToday.toString()}
+            label="XP Hoy"
+            color="#FFD700"
             loading={stats.loading}
           />
-          <StatCard 
-            icon="🏆" 
-            value={stats.loading ? "..." : stats.totalAchievements.toString()} 
-            label="Logros" 
-            color="#32CD32" 
+          <StatCard
+            icon="🏆"
+            value={stats.loading ? "..." : stats.totalAchievements.toString()}
+            label="Logros"
+            color="#32CD32"
             loading={stats.loading}
           />
         </View>
@@ -505,7 +507,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 100,
   },
-  
+
   // Hero Section
   hero: {
     marginBottom: 25,
@@ -541,7 +543,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
   },
-  
+
   // Progress Section
   progressSection: {
     flexDirection: 'row',
@@ -570,7 +572,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FF4500',
   },
-  
+
   // Stats Container
   statsContainer: {
     flexDirection: 'row',
@@ -596,7 +598,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
   },
-  
+
   // Section
   section: {
     marginBottom: 25,
@@ -622,7 +624,7 @@ const styles = StyleSheet.create({
     color: '#FF4500',
     fontWeight: '600',
   },
-  
+
   // Workout Card
   workoutCard: {
     borderRadius: 20,
@@ -697,7 +699,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginLeft: 4,
   },
-  
+
   // Quick Habits
   quickHabitsGrid: {
     flexDirection: 'row',
@@ -745,7 +747,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  
+
   // Weekly Card
   weeklyCard: {
     backgroundColor: '#1a1a1a',
@@ -767,7 +769,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  
+
   // Quote Card
   quoteCard: {
     backgroundColor: '#1a1a1a',
