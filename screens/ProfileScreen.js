@@ -66,7 +66,7 @@ export default function ProfileScreen({ navigation }) {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        navigation.replace('Auth');
+        navigation.navigate('Login');
         return;
       }
 
