@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const { width } = Dimensions.get('window');
+// Importa los iconos que quieras usar
+import { Ionicons, MaterialIcons, Feather, AntDesign } from '@expo/vector-icons';
 
 export default function BottomMenu({ navigation, activeScreen }) {
     return (
@@ -13,8 +13,14 @@ export default function BottomMenu({ navigation, activeScreen }) {
                     style={styles.tab}
                     onPress={() => navigation.navigate('Home')}
                 >
-                    <Text style={[styles.icon, activeScreen === 'Home' && styles.activeIcon]}>🏠</Text>
-                    <Text style={[styles.label, activeScreen === 'Home' && styles.activeLabel]}>Home</Text>
+                    <Ionicons 
+                        name="home-outline" 
+                        size={24} 
+                        color={activeScreen === 'Home' ? '#4CAF50' : '#666'} 
+                    />
+                    <Text style={[styles.label, activeScreen === 'Home' && styles.activeLabel]}>
+                        Home
+                    </Text>
                 </TouchableOpacity>
 
                 {/* Spacer for Center Button */}
@@ -25,8 +31,14 @@ export default function BottomMenu({ navigation, activeScreen }) {
                     style={styles.tab}
                     onPress={() => navigation.navigate('Profile')}
                 >
-                    <Text style={[styles.icon, activeScreen === 'Profile' && styles.activeIcon]}>👤</Text>
-                    <Text style={[styles.label, activeScreen === 'Profile' && styles.activeLabel]}>Profile</Text>
+                    <Ionicons 
+                        name="person-outline" 
+                        size={24} 
+                        color={activeScreen === 'Profile' ? '#4CAF50' : '#666'} 
+                    />
+                    <Text style={[styles.label, activeScreen === 'Profile' && styles.activeLabel]}>
+                        Profile
+                    </Text>
                 </TouchableOpacity>
             </View>
 
@@ -36,10 +48,10 @@ export default function BottomMenu({ navigation, activeScreen }) {
                 onPress={() => navigation.navigate('WorkoutPlan')}
             >
                 <LinearGradient
-                    colors={['#FF4500', '#FF8C00']}
+                    colors={['#4CAF50', '#45a049']}
                     style={styles.centerButton}
                 >
-                    <Text style={styles.centerIcon}>💪</Text>
+                    <MaterialIcons name="fitness-center" size={32} color="#fff" />
                 </LinearGradient>
             </TouchableOpacity>
         </View>
@@ -72,27 +84,21 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flex: 1,
     },
-    icon: {
-        fontSize: 24,
-        color: '#666',
-        marginBottom: 2,
-    },
-    activeIcon: {
-        color: '#FF4500',
-    },
     label: {
         fontSize: 10,
         color: '#666',
+        fontWeight: '400',
+        marginTop: 4,
     },
     activeLabel: {
-        color: '#FF4500',
-        fontWeight: 'bold',
+        color: '#4CAF50',
+        fontWeight: '600',
     },
     centerButtonContainer: {
         position: 'absolute',
         bottom: 30,
         alignSelf: 'center',
-        shadowColor: '#FF4500',
+        shadowColor: '#4CAF50',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.5,
         shadowRadius: 8,
@@ -106,8 +112,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderWidth: 4,
         borderColor: '#000',
-    },
-    centerIcon: {
-        fontSize: 30,
     },
 });

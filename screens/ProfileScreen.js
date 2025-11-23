@@ -15,27 +15,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import BottomMenu from '../components/BottomMenu';
 
-// Card de información
-const InfoCard = ({ icon, label, value, onPress }) => (
-  <TouchableOpacity style={styles.infoCard} onPress={onPress} activeOpacity={0.7}>
-    <Text style={styles.infoIcon}>{icon}</Text>
-    <View style={styles.infoContent}>
-      <Text style={styles.infoLabel}>{label}</Text>
-      <Text style={styles.infoValue}>{value || 'No definido'}</Text>
-    </View>
-    <Text style={styles.infoArrow}>›</Text>
-  </TouchableOpacity>
-);
-
-// Card de estadística
-const StatCard = ({ icon, value, label, color }) => (
-  <View style={styles.statCard}>
-    <Text style={styles.statIcon}>{icon}</Text>
-    <Text style={[styles.statValue, { color }]}>{value}</Text>
-    <Text style={styles.statLabel}>{label}</Text>
-  </View>
-);
-
 export default function ProfileScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -70,7 +49,6 @@ export default function ProfileScreen({ navigation }) {
         return;
       }
 
-      // Cargar perfil
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('*')
@@ -92,7 +70,6 @@ export default function ProfileScreen({ navigation }) {
         });
       }
 
-      // Cargar datos de gamificación
       const { data: gamData, error: gamError } = await supabase
         .from('user_gamification')
         .select('*')
@@ -138,7 +115,6 @@ export default function ProfileScreen({ navigation }) {
 
       if (error) throw error;
 
-      // Guardar en AsyncStorage también
       await AsyncStorage.setItem('userName', profile.full_name);
       await AsyncStorage.setItem('userGoal', profile.goal);
 
@@ -154,8 +130,8 @@ export default function ProfileScreen({ navigation }) {
 
   const handleLogout = async () => {
     Alert.alert(
-      'Cerrar Sesión',
-      '¿Estás seguro que deseas salir?',
+      'Log Out',
+      '¿Estás seguro que deseas cerrar sesión?',
       [
         {
           text: 'Cancelar',
@@ -171,7 +147,6 @@ export default function ProfileScreen({ navigation }) {
                 Alert.alert('Error', 'No se pudo cerrar sesión');
                 console.error('Logout error:', error);
               }
-              // La navegación se manejará automáticamente por el listener en App.js
             } catch (error) {
               console.error('Error al cerrar sesión:', error);
               Alert.alert('Error', 'Ocurrió un error al cerrar sesión');
@@ -186,7 +161,7 @@ export default function ProfileScreen({ navigation }) {
     return (
       <View style={styles.loadingContainer}>
         <LinearGradient colors={['#000000', '#121212']} style={styles.background} />
-        <ActivityIndicator size="large" color="#FF4500" />
+        <ActivityIndicator size="large" color="#4CAF50" />
       </View>
     );
   }
@@ -194,172 +169,215 @@ export default function ProfileScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <LinearGradient colors={['#000000', '#0a0a0a', '#121212']} style={styles.background} />
+      <LinearGradient colors={['#000000', '#0a0a0a']} style={styles.background} />
 
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Mi Perfil</Text>
+        <Text style={styles.headerTitle}>Profile</Text>
         <TouchableOpacity onPress={() => setEditMode(!editMode)} style={styles.editButton}>
-          <Text style={styles.editIcon}>{editMode ? '✕' : '✎'}</Text>
+          <Text style={styles.editText}>{editMode ? 'Cancel' : 'Edit'}</Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Avatar y nombre */}
+        {/* Profile Header */}
         <View style={styles.profileHeader}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{profile.full_name?.charAt(0) || 'U'}</Text>
+          <View style={styles.avatarContainer}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{profile.full_name?.charAt(0) || 'U'}</Text>
+            </View>
+            <View style={styles.cameraButton}>
+              <Text style={styles.cameraIcon}>📷</Text>
+            </View>
           </View>
-          {editMode ? (
-            <TextInput
-              style={styles.nameInput}
-              value={profile.full_name}
-              onChangeText={(text) => setProfile({ ...profile, full_name: text })}
-              placeholder="Tu nombre"
-              placeholderTextColor="#666"
-            />
-          ) : (
-            <Text style={styles.profileName}>{profile.full_name || 'Usuario'}</Text>
-          )}
+          
+          <Text style={styles.profileName}>{profile.full_name || 'Usuario'}</Text>
           <Text style={styles.profileEmail}>{profile.email}</Text>
         </View>
 
-        {/* Stats de gamificación */}
-        <View style={styles.statsContainer}>
-          <StatCard icon="⭐" value={gamification.level} label="Nivel" color="#FFD700" />
-          <StatCard icon="⚡" value={gamification.total_xp} label="XP Total" color="#FF4500" />
-          <StatCard icon="🔥" value={gamification.streak} label="Racha" color="#FF6347" />
+        {/* Pro Member Card */}
+        <View style={styles.proMemberCard}>
+          <LinearGradient
+            colors={['#4CAF50', '#45a049']}
+            style={styles.proGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          >
+            <View style={styles.proContent}>
+              <View style={styles.proLeft}>
+                <Text style={styles.proTitle}>Pro Member 👑</Text>
+                <Text style={styles.proSubtitle}>All features unlocked!</Text>
+                <TouchableOpacity style={styles.upgradeButton}>
+                  <Text style={styles.upgradeText}>Upgrade</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.proRight}>
+                <Text style={styles.giftIcon}>🎁</Text>
+              </View>
+            </View>
+          </LinearGradient>
         </View>
 
-        {/* Información personal */}
+        {/* Account Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Información Personal</Text>
+          <Text style={styles.sectionTitle}>Account</Text>
 
           {editMode ? (
-            <>
+            <View style={styles.editContainer}>
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Objetivo</Text>
+                <Text style={styles.inputLabel}>Email</Text>
                 <TextInput
                   style={styles.input}
-                  value={profile.goal}
-                  onChangeText={(text) => setProfile({ ...profile, goal: text })}
-                  placeholder="Ej: Perder peso, Ganar músculo"
+                  value={profile.email}
+                  editable={false}
                   placeholderTextColor="#666"
                 />
               </View>
 
-              <View style={styles.inputRow}>
-                <View style={styles.inputGroupHalf}>
-                  <Text style={styles.inputLabel}>Edad</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={profile.age}
-                    onChangeText={(text) => setProfile({ ...profile, age: text })}
-                    placeholder="25"
-                    placeholderTextColor="#666"
-                    keyboardType="numeric"
-                  />
-                </View>
-
-                <View style={styles.inputGroupHalf}>
-                  <Text style={styles.inputLabel}>Género</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={profile.gender}
-                    onChangeText={(text) => setProfile({ ...profile, gender: text })}
-                    placeholder="M/F/Otro"
-                    placeholderTextColor="#666"
-                  />
-                </View>
-              </View>
-
-              <View style={styles.inputRow}>
-                <View style={styles.inputGroupHalf}>
-                  <Text style={styles.inputLabel}>Peso (kg)</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={profile.weight}
-                    onChangeText={(text) => setProfile({ ...profile, weight: text })}
-                    placeholder="70"
-                    placeholderTextColor="#666"
-                    keyboardType="decimal-pad"
-                  />
-                </View>
-
-                <View style={styles.inputGroupHalf}>
-                  <Text style={styles.inputLabel}>Altura (cm)</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={profile.height}
-                    onChangeText={(text) => setProfile({ ...profile, height: text })}
-                    placeholder="175"
-                    placeholderTextColor="#666"
-                    keyboardType="decimal-pad"
-                  />
-                </View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Date of Birth</Text>
+                <TextInput
+                  style={styles.input}
+                  value={profile.age}
+                  onChangeText={(text) => setProfile({ ...profile, age: text })}
+                  placeholder="Edad"
+                  placeholderTextColor="#666"
+                  keyboardType="numeric"
+                />
               </View>
 
               <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Nivel de Fitness</Text>
+                <Text style={styles.inputLabel}>Gender</Text>
                 <TextInput
                   style={styles.input}
-                  value={profile.fitness_level}
-                  onChangeText={(text) => setProfile({ ...profile, fitness_level: text })}
-                  placeholder="Principiante, Intermedio, Avanzado"
+                  value={profile.gender}
+                  onChangeText={(text) => setProfile({ ...profile, gender: text })}
+                  placeholder="Male/Female/Other"
                   placeholderTextColor="#666"
                 />
               </View>
-            </>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Phone Number</Text>
+                <TextInput
+                  style={styles.input}
+                  value={profile.weight}
+                  onChangeText={(text) => setProfile({ ...profile, weight: text })}
+                  placeholder="+00-000-000-0000"
+                  placeholderTextColor="#666"
+                  keyboardType="phone-pad"
+                />
+              </View>
+            </View>
           ) : (
             <>
-              <InfoCard icon="🎯" label="Objetivo" value={profile.goal} />
-              <InfoCard icon="👤" label="Edad" value={profile.age ? `${profile.age} años` : null} />
-              <InfoCard icon="⚖️" label="Peso" value={profile.weight ? `${profile.weight} kg` : null} />
-              <InfoCard icon="📏" label="Altura" value={profile.height ? `${profile.height} cm` : null} />
-              <InfoCard icon="💪" label="Nivel" value={profile.fitness_level} />
+              <TouchableOpacity style={styles.menuItem}>
+                <Text style={styles.menuIcon}>📦</Text>
+                <Text style={styles.menuText}>Orders</Text>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem}>
+                <Text style={styles.menuIcon}>↩️</Text>
+                <Text style={styles.menuText}>Returns</Text>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem}>
+                <Text style={styles.menuIcon}>🔖</Text>
+                <Text style={styles.menuText}>Wishlist</Text>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem}>
+                <Text style={styles.menuIcon}>📍</Text>
+                <Text style={styles.menuText}>Address</Text>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem}>
+                <Text style={styles.menuIcon}>💳</Text>
+                <Text style={styles.menuText}>Payment</Text>
+                <Text style={styles.menuArrow}>›</Text>
+              </TouchableOpacity>
             </>
           )}
         </View>
 
-        {/* Botones de acción */}
+        {/* Personalization Section (only when not editing) */}
+        {!editMode && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Personalization</Text>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <Text style={styles.menuIcon}>🔔</Text>
+              <Text style={styles.menuText}>Notification</Text>
+              <Text style={styles.menuArrow}>›</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <Text style={styles.menuIcon}>⚙️</Text>
+              <Text style={styles.menuText}>Preferences</Text>
+              <Text style={styles.menuArrow}>›</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <Text style={styles.menuIcon}>🌙</Text>
+              <Text style={styles.menuText}>Dark Mode</Text>
+              <Text style={styles.menuArrow}>›</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Save Button */}
         {editMode && (
           <TouchableOpacity
             style={styles.saveButton}
             onPress={saveProfile}
             disabled={saving}
-            activeOpacity={0.8}
           >
             <LinearGradient
-              colors={['#32CD32', '#228B22']}
+              colors={['#4CAF50', '#45a049']}
               style={styles.saveGradient}
             >
               {saving ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.saveText}>💾 Guardar Cambios</Text>
+                <Text style={styles.saveText}>Save Changes</Text>
               )}
             </LinearGradient>
           </TouchableOpacity>
         )}
 
-        {/* Botón de logout */}
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={handleLogout}
-          activeOpacity={0.8}
-        >
-          <LinearGradient
-            colors={['#FF4500', '#FF6347']}
-            style={styles.logoutGradient}
-          >
-            <Text style={styles.logoutText}>🚪 Cerrar Sesión</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        {/* Help & Support Section (only when not editing) */}
+        {!editMode && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Help & Support</Text>
 
-        <Text style={styles.version}>Versión 1.0.0</Text>
+            <TouchableOpacity style={styles.menuItem}>
+              <Text style={styles.menuIcon}>🛟</Text>
+              <Text style={styles.menuText}>Get Help</Text>
+              <Text style={styles.menuArrow}>›</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <Text style={styles.menuIcon}>❓</Text>
+              <Text style={styles.menuText}>FAQ</Text>
+              <Text style={styles.menuArrow}>›</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+              <Text style={styles.menuIcon}>🚪</Text>
+              <Text style={[styles.menuText, { color: '#FF5252' }]}>Log Out</Text>
+              <Text style={styles.menuArrow}></Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <View style={{ height: 40 }} />
       </ScrollView>
 
       <BottomMenu navigation={navigation} activeScreen="Profile" />
@@ -396,156 +414,168 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: '#1a1a1a',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   backIcon: {
-    fontSize: 24,
+    fontSize: 28,
     color: '#fff',
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '600',
     color: '#fff',
   },
   editButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#1a1a1a',
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
-  editIcon: {
-    fontSize: 20,
-    color: '#FF4500',
+  editText: {
+    fontSize: 16,
+    color: '#4CAF50',
+    fontWeight: '500',
   },
   content: {
-    padding: 20,
+    paddingHorizontal: 20,
     paddingBottom: 100,
   },
   profileHeader: {
     alignItems: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
+  },
+  avatarContainer: {
+    position: 'relative',
+    marginBottom: 12,
   },
   avatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#FFD700',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
-    borderColor: '#FF4500',
-    marginBottom: 15,
   },
   avatarText: {
     fontSize: 40,
     fontWeight: 'bold',
-    color: '#FF4500',
+    color: '#000',
+  },
+  cameraButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#4CAF50',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#000',
+  },
+  cameraIcon: {
+    fontSize: 16,
   },
   profileName: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 5,
-  },
-  nameInput: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-    backgroundColor: '#1a1a1a',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 12,
-    marginBottom: 5,
-    textAlign: 'center',
-    borderWidth: 2,
-    borderColor: '#FF4500',
+    marginBottom: 4,
   },
   profileEmail: {
     fontSize: 14,
     color: '#999',
   },
-  statsContainer: {
-    flexDirection: 'row',
-    gap: 12,
+  proMemberCard: {
     marginBottom: 25,
-  },
-  statCard: {
-    flex: 1,
-    backgroundColor: '#1a1a1a',
     borderRadius: 16,
-    padding: 16,
+    overflow: 'hidden',
+  },
+  proGradient: {
+    padding: 20,
+  },
+  proContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 6,
   },
-  statIcon: {
-    fontSize: 28,
+  proLeft: {
+    flex: 1,
   },
-  statValue: {
-    fontSize: 24,
+  proTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
   },
-  statLabel: {
-    fontSize: 12,
-    color: '#999',
+  proSubtitle: {
+    fontSize: 14,
+    color: '#e8f5e9',
+    marginBottom: 12,
+  },
+  upgradeButton: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+  },
+  upgradeText: {
+    color: '#4CAF50',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  proRight: {
+    marginLeft: 16,
+  },
+  giftIcon: {
+    fontSize: 48,
   },
   section: {
     marginBottom: 25,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 15,
-  },
-  infoCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1a1a1a',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-  },
-  infoIcon: {
-    fontSize: 24,
-    marginRight: 15,
-  },
-  infoContent: {
-    flex: 1,
-  },
-  infoLabel: {
-    fontSize: 13,
-    color: '#999',
-    marginBottom: 4,
-  },
-  infoValue: {
     fontSize: 16,
     fontWeight: '600',
     color: '#fff',
+    marginBottom: 12,
+    paddingLeft: 4,
   },
-  infoArrow: {
-    fontSize: 24,
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1a1a1a',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 8,
+  },
+  menuIcon: {
+    fontSize: 20,
+    marginRight: 14,
+    width: 24,
+    textAlign: 'center',
+  },
+  menuText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '500',
+  },
+  menuArrow: {
+    fontSize: 20,
     color: '#666',
   },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  inputGroupHalf: {
-    flex: 1,
-  },
-  inputRow: {
-    flexDirection: 'row',
+  editContainer: {
     gap: 12,
-    marginBottom: 16,
+  },
+  inputGroup: {
+    marginBottom: 8,
   },
   inputLabel: {
     fontSize: 14,
     color: '#999',
     marginBottom: 8,
+    paddingLeft: 4,
   },
   input: {
     backgroundColor: '#1a1a1a',
@@ -557,14 +587,10 @@ const styles = StyleSheet.create({
     borderColor: '#333',
   },
   saveButton: {
-    marginBottom: 12,
-    borderRadius: 16,
+    marginTop: 10,
+    marginBottom: 20,
+    borderRadius: 12,
     overflow: 'hidden',
-    elevation: 5,
-    shadowColor: '#32CD32',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
   },
   saveGradient: {
     paddingVertical: 16,
@@ -574,30 +600,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  logoutButton: {
-    marginBottom: 20,
-    borderRadius: 16,
-    overflow: 'hidden',
-    elevation: 5,
-    shadowColor: '#FF4500',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  logoutGradient: {
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  version: {
-    textAlign: 'center',
-    color: '#666',
-    fontSize: 12,
-    marginTop: 10,
   },
 });
