@@ -337,7 +337,7 @@ export default function HomeScreen({ navigation }) {
                 {userName?.split(' ')[0] || 'Warrior'} 💪
               </Text>
             </View>
-            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
               <View style={styles.avatar}>
                 <Text style={styles.avatarText}>{userName?.charAt(0) || 'W'}</Text>
               </View>

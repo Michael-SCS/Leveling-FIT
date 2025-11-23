@@ -5,8 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from './lib/supabase';
 
 // Gamification Provider
-import { GamificationProvider } from './lib/gamification'; 
-// 👆 ajusta el path correcto de tu archivo
+import { GamificationProvider } from './lib/gamification';
 
 // Screens
 import IntroSlides from './screens/IntroSlides';
@@ -14,6 +13,8 @@ import AuthScreen from './screens/AuthScreen';
 import OnboardingFlow from './screens/OnboardingFlow';
 import OnboardingSummary from './screens/OnboardingSummary';
 import HomeScreen from './screens/HomeScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import WorkoutScreen from './screens/WorkoutPlanScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -63,15 +64,15 @@ export default function App() {
     if (!hasSeenIntro) return 'IntroSlides';
     if (!session) return 'Auth';
     if (session && profile && !profile.onboarding_completed) return 'OnboardingFlow';
-    return 'Home';
+    if (session && profile && profile.onboarding_completed) return 'Home';
+
+    return 'Auth'; // fallback seguro
   };
 
   const initialRoute = getInitialScreen();
 
   return (
-    <GamificationProvider> 
-      {/* 👆 AHORA TODO EL APP ESTÁ ENVUELTO Y NO FALLA EL HOOK */}
-
+    <GamificationProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
           <Stack.Screen name="IntroSlides" component={IntroSlides} />
@@ -79,9 +80,10 @@ export default function App() {
           <Stack.Screen name="OnboardingFlow" component={OnboardingFlow} />
           <Stack.Screen name="OnboardingSummary" component={OnboardingSummary} />
           <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="Workout" component={WorkoutScreen} />
         </Stack.Navigator>
       </NavigationContainer>
-
     </GamificationProvider>
   );
 }

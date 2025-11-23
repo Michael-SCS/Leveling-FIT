@@ -10,6 +10,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { supabase } from '../lib/supabase';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -97,7 +99,34 @@ const OnboardingLayout = ({ children, progress, onBack, onNext, canContinue = tr
 // ------------------------------
 // PANTALLAS
 // ------------------------------
+const OnboardingName = ({ navigation, route }) => {
+  const [name, setName] = useState(route.params?.data?.full_name || '');
 
+  return (
+    <OnboardingLayout
+      progress={0}
+      onNext={() =>
+        navigation.navigate('OnboardingGender', {
+          data: { ...route.params?.data, full_name: name },
+        })
+      }
+      canContinue={name.trim().length >= 2}
+    >
+      <Text style={styles.title}>¿Cómo te llamas?</Text>
+      <Text style={styles.subtitle}>Queremos conocerte :)</Text>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, { fontSize: 22 }]}
+          placeholder="Escribe tu nombre"
+          placeholderTextColor="#666"
+          value={name}
+          onChangeText={setName}
+        />
+      </View>
+    </OnboardingLayout>
+  );
+};
 const OnboardingGender = ({ navigation, route }) => {
   const [gender, setGender] = useState(route.params?.data?.gender || null);
 
@@ -517,6 +546,67 @@ const OnboardingFrequency = ({ navigation, route }) => {
     </OnboardingLayout>
   );
 };
+const OnboardingSummary = ({ navigation, route }) => {
+  const data = route.params?.data || {};
+
+  const finishOnboarding = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // GUARDAR EN SUPABASE
+      await supabase
+        .from('profiles')
+        .update({
+          full_name: data.full_name,
+          gender: data.gender,
+          goal: data.goal,
+          weight: data.weight,
+          heard_from: data.heard_from,
+          motivation: data.motivation,
+          target_body_parts: data.target_body_parts,
+          fitness_level: data.fitness_level,
+          age: data.age,
+          height: data.height,
+          target_weight: data.target_weight,
+          health_conditions: data.health_conditions,
+          equipment: data.equipment,
+          training_frequency: data.training_frequency,
+          training_days: data.training_days,
+          onboarding_completed: true,
+        })
+        .eq('id', user.id);
+
+      // MARCAR COMO COMPLETADO LOCALMENTE
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+
+    } catch (error) {
+      console.error("ERROR SAVING ONBOARDING:", error);
+    }
+  };
+
+  return (
+    <OnboardingLayout
+      progress={100}
+      onNext={finishOnboarding}   // <- 🔥 AQUÍ EL BOTÓN FINAL FUNCIONA
+      nextLabel="Finalizar"
+    >
+      <Text style={styles.title}>Resumen de tu información</Text>
+      <Text style={styles.subtitle}>Revisa tus respuestas antes de finalizar</Text>
+
+      <View style={{ marginTop: 20 }}>
+        {Object.entries(data).map(([key, value]) => (
+          <Text key={key} style={{ color: '#ccc', marginBottom: 10 }}>
+            {key}: {Array.isArray(value) ? value.join(', ') : value.toString()}
+          </Text>
+        ))}
+      </View>
+    </OnboardingLayout>
+  );
+};
 
 const OnboardingDays = ({ navigation, route }) => {
   const [days, setDays] = useState(route.params?.data?.training_days || []);
@@ -583,13 +673,14 @@ export default function OnboardingFlow() {
   return (
     <Stack.Navigator 
       screenOptions={{ headerShown: false }}
-      initialRouteName="OnboardingGender"
+      initialRouteName="OnboardingName"
     >
       <Stack.Screen 
-        name="OnboardingGender" 
-        component={OnboardingGender}
+        name="OnboardingName" 
+        component={OnboardingName}
         initialParams={{ data: {} }}
       />
+      <Stack.Screen name="OnboardingGender" component={OnboardingGender} />
       <Stack.Screen name="OnboardingGoal" component={OnboardingGoal} />
       <Stack.Screen name="OnboardingHeardFrom" component={OnboardingHeardFrom} />
       <Stack.Screen name="OnboardingMotivation" component={OnboardingMotivation} />
@@ -603,6 +694,7 @@ export default function OnboardingFlow() {
       <Stack.Screen name="OnboardingEquipment" component={OnboardingEquipment} />
       <Stack.Screen name="OnboardingFrequency" component={OnboardingFrequency} />
       <Stack.Screen name="OnboardingDays" component={OnboardingDays} />
+      <Stack.Screen name="OnboardingSummary" component={OnboardingSummary} />
     </Stack.Navigator>
   );
 }
